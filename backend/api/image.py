@@ -10,7 +10,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class ImageAnalyzer:
-    def __init__(self,ollama_host: str = "http://localhost:11434",model: str = "gemma3:4b",timeout: int = 8):
+    def __init__(self, ollama_host: str = None, model: str = "gemma3:4b", timeout: int = 8):
+        if ollama_host is None:
+            ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self.client = AsyncClient(host=ollama_host)
         self.model = model
         self.timeout = timeout

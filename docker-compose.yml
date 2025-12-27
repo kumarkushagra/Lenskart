@@ -1,0 +1,49 @@
+services:
+  llm:
+    build: backend/llm_server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - lenskart-net
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    dns: 
+      - 8.8.8.8
+      - 1.1.1.1
+
+  backend:
+    build:
+      context: backend/api
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://llm:11434
+    depends_on:
+      - llm
+    networks:
+      - lenskart-net
+
+  frontend:
+    build:
+      context: backend/api
+      dockerfile: Dockerfile
+    command: python gradio_app.py
+    ports:
+      - "7860:7860"
+    environment:
+      - BACKEND_URL=http://backend:8000/analyze
+    depends_on:
+      - backend
+    networks:
+      - lenskart-net
+
+networks:
+  lenskart-net:
+    driver: bridge
+
+volumes:
+  ollama_models:

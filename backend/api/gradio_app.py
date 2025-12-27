@@ -2,7 +2,9 @@ import requests
 import json
 import gradio as gr
 
-API_ENDPOINT = "http://127.0.0.1:8000/analyze"
+import os
+
+API_ENDPOINT = os.getenv("BACKEND_URL", "http://127.0.0.1:8000/analyze")
 
 class GradioUI:
     def analyze(self, image_url: str):
