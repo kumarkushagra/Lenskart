@@ -1,0 +1,46 @@
+{
+  "visual_dimensions": {
+    "gender_expression": {
+      "score": 1.5,
+      "confidence": 0.8,
+      "reasoning": "The frames are relatively angular and geometric, leaning towards a masculine aesthetic."
+    },
+    "visual_weight": {
+      "score": 2,
+      "confidence": 0.9,
+      "reasoning": "The frames appear to be substantial and weighty."
+    },
+    "embellishment": {
+      "score": 0,
+      "confidence": 0.6,
+      "reasoning": "The frames have a simple design with minimal ornamentation."
+    },
+    "unconventionality": {
+      "score": 1,
+      "confidence": 0.7,
+      "reasoning": "The frames have a modern, geometric shape, but are not overly avant-garde."
+    },
+    "formality": {
+      "score": 2,
+      "confidence": 0.8,
+      "reasoning": "The frames have a structured and defined shape, suggesting a formal style."
+    }
+  },
+  "visual_attributes": {
+    "wireframe_present": true,
+    "frame_geometry": "rectangular",
+    "transparency": "opaque",
+    "dominant_colors": [
+      "black",
+      "silver"
+    ],
+    "surface_texture": "smooth",
+    "suitable_for_kids": "no"
+  },
+  "visual_metadata": {
+    "image_clarity": "clear",
+    "view_angle": "front",
+    "lighting_condition": "even"
+  },
+  "ambiguities": []
+}
