@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Literal, List
 
+
 class VisualDimension(BaseModel):
     score: float = Field(ge=-5.0, le=5.0)
     confidence: float = Field(ge=0.0, le=1.0)
@@ -16,7 +17,7 @@ class VisualDimensions(BaseModel):
 
 
 class VisualAttributes(BaseModel):
-    wireframe_present: Literal[True, False, "ambiguous"]
+    wireframe_present: Literal["yes", "no", "ambiguous"]
     frame_geometry: Literal[
         "round", "rectangular", "square", "aviator",
         "cat_eye", "irregular", "unknown"
