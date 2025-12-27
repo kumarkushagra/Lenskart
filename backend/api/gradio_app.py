@@ -17,7 +17,9 @@ class GradioUI:
         try:
             resp = requests.get(
                 f"{API_ENDPOINT}/{image_url}",
-                timeout=120
+                # # while running the container, i observed that LLM was not loading onto the GPU, so removed thr timeout to ensure results are noticable even if it takes 8 minutes to process
+                # most likely the cause is no GPU drivers available in the docker container 
+                # timeout=120 
             )
             resp.raise_for_status()
             data = resp.json()
