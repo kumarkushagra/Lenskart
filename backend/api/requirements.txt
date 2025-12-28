@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+requests
+gradio
+ollama
+pydantic
+supabase
+websockets>=11.0
+

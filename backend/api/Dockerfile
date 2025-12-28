@@ -3,7 +3,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Install dependencies
-RUN pip install --no-cache-dir fastapi uvicorn requests gradio ollama pydantic supabase "websockets>=11.0"
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy code
 COPY . /app
