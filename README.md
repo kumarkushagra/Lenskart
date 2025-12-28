@@ -29,11 +29,12 @@ I divided this system into 3 services (will implement DB later)
 ### Services
 - LLM Service: Ollama running vision capable models like `gemma3:4b, ministral-3:3b, qwen3-vl:4b`
 - Backend API: FastAPI for image analysis 
+- Supabase: sql based databse which stores the hash values of images (unique) and returns the cache results 
 - Frontend UI: Gradio web interface
 
 ### Data Flow
 - User submits image URLs via UI (multiple at once or one at a time)
-- TODO: Backend checks if image is already presend in the database (i.e. already processed)
+- Backend checks if image is already presend in the database (i.e. already processed)
 - Backend fetches images from the URL
 - Images sent to LLM for analysis
 - LLM returns structured JSON
@@ -47,22 +48,29 @@ I divided this system into 3 services (will implement DB later)
 - Docker + Docker Compose (If not installed pls refer to the bottom of this documentation) 
 - ~8GB RAM (i would reccomend GPU, but its wayy too expensive on cloud platforms)
 
-### Quick Start
+
+### Manual Setup (recommended if GPU && GPU drivers are already configured on local device)
+- Install [Ollama](https://ollama.com/download)
+- Pull `gemma3:4b`
+- Install Python libraries (requirements.txt)
+- Run FastAPI + Gradio separately, AND ENSURE the the ollama client is running in background OR execute `ollama serve` to start it (ollama services are available at port 11434)
+      - check http://localhost:11434/ (should return `Ollama is running`)
+
 - Clone repo
 - cd into the repo
-- Run `docker-compose up --build` (watch the logs)
+- Setup the env variables (provided at the bottom (check my server, run `cat .env`))
+
+### Quick Start 
+  `easier, but slow (i was unable to configure the GPU drivers in the docker container, so the LLM server dos'nt detect GPU))`
+
+- Run `docker-compose up` (watch the logs)
   `It will take a while to download all the models, in /Lenskart/backend/llm_server/Dockerfile, i have written gemma3:4b ONLY, since it takes very long time to download these models`
-- Services started:
+  
+Services started:
   - Backend: `localhost:8000`
   - UI: `localhost:7860`
 
 ## GO TO localhost:7860 to interact with the UI
-
-### Manual Setup (recommended if GPU && GPU drivers are already configured on local device)
-- Install Ollama
-- Pull `gemma3:4b`
-- Install Python libraries
-- Run FastAPI + Gradio separately, AND ENSURE the the ollama client is running in background OR execute `ollama serve` to start it (ollama services are available at port 11434)
 
 ---
 
@@ -71,10 +79,12 @@ I divided this system into 3 services (will implement DB later)
 - Gradio UI: `7860`
 - Ollama service: default Ollama port (11434)
 - Config via environment variables / Docker
+- supabase DB: https://lnchdddfspjufmpbxoui.supabase.co
 
 ---
 
 ## Visual Measurement Dimensions 
+# The results might be off because im using a small model (~4B parameters)
 (as mentioned in the assignment)
 Each attribute is scored from `-5.0` to `+5.0` with a corresponding confidence score.
 
@@ -199,6 +209,7 @@ Gradio UI supports:
 # Test on my machine
 ## DEMO 
 [attatch demo video]
+
 I have deployed this on my Home Server, available at: `https://lenskart.devvdeploy.site/`
 You can access this server via ssh (ssh.devvdeploy.site) OR at `cockpit.devvdeploy.site` 
 - Username: `lenskart`
