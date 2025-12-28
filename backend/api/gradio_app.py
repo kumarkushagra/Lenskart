@@ -1,64 +1,97 @@
 import requests
-import json
 import gradio as gr
-
 import os
 
 API_ENDPOINT = os.getenv("BACKEND_URL", "http://127.0.0.1:8000/analyze")
 
-class GradioUI:
-    def analyze(self, image_url: str):
-        if not image_url:
-            return "", "Empty URL"
 
+class GradioUI:
+
+    # ---------- BULK ANALYSIS ----------
+    def analyze_bulk(self, csv_text: str):
+        if not csv_text.strip():
+            return "<pre style='color:red;'>Empty input</pre>"
+
+        urls = [
+            line.strip()
+            for line in csv_text.splitlines()
+            if line.strip()
+        ]
+
+        html = "<div style='padding:10px;'>"
+
+        for idx, url in enumerate(urls, start=1):
+            html += self._analyze_single(idx, url)
+
+        html += "</div>"
+        return html
+
+    # ---------- SINGLE IMAGE ----------
+    def _analyze_single(self, idx: int, image_url: str) -> str:
         if not image_url.startswith("http"):
             image_url = "https://" + image_url
 
         try:
-            resp = requests.get(
-                f"{API_ENDPOINT}/{image_url}",
-                # # while running the container, i observed that LLM was not loading onto the GPU, so removed thr timeout to ensure results are noticable even if it takes 8 minutes to process
-                # most likely the cause is no GPU drivers available in the docker container 
-                # timeout=120 
-            )
+            resp = requests.get(f"{API_ENDPOINT}/{image_url}")
             resp.raise_for_status()
             data = resp.json()
+            analysis_html = self._render_analysis(data)
 
         except Exception as e:
-            return (
-                self._image_box(image_url),
-                f"<pre style='color:red;'>ERROR: {str(e)}</pre>"
-            )
+            analysis_html = f"<pre style='color:red;'>ERROR: {str(e)}</pre>"
 
-        return self._image_box(image_url), self._render_analysis(data)
+        return f"""
+        <details style="
+            margin-bottom:15px;
+            border:1px solid #333;
+            border-radius:10px;
+            background:#121212;
+        ">
+          <summary style="
+              cursor:pointer;
+              padding:10px;
+              font-weight:bold;
+              background:#1a1a1a;
+              border-radius:10px;
+          ">
+            Image {idx}
+          </summary>
 
+          <div style="padding:15px;">
+            {self._image_box(image_url)}
+            <hr style="border-color:#333;">
+            {analysis_html}
+          </div>
+        </details>
+        """
+
+    # ---------- IMAGE BOX ----------
     def _image_box(self, image_url: str) -> str:
         return f"""
         <div style="
-            border: 2px solid #444;
-            border-radius: 10px;
-            padding: 10px;
-            text-align: center;
-            background-color: #111;
+            border:2px solid #444;
+            border-radius:10px;
+            padding:10px;
+            text-align:center;
+            background:#111;
+            margin-bottom:15px;
         ">
             <img src="{image_url}"
-                 style="max-width:100%; max-height:400px; border-radius:6px;">
+                 style="max-width:100%; max-height:360px; border-radius:6px;">
         </div>
         """
 
-    # ANALYSIS RENDERER 
+    # ---------- ANALYSIS RENDER ----------
     def _render_analysis(self, data: dict) -> str:
         vd = data.get("visual_dimensions", {})
         va = data.get("visual_attributes", {})
         vm = data.get("visual_metadata", {})
         ambiguities = data.get("ambiguities", [])
 
-        html = "<div style='padding:10px;'>"
+        html = "<div>"
 
-        # Visual Dimensions
         html += "<h3>Visual Dimensions</h3>"
         for name, obj in vd.items():
-            title = name.replace("_", " ").title()
             html += f"""
             <div style="
                 border:1px solid #333;
@@ -67,30 +100,25 @@ class GradioUI:
                 margin-bottom:10px;
                 background:#181818;
             ">
-                <b>{title}</b><br>
-                Score: <b>{obj['score']}</b> &nbsp;|&nbsp;
+                <b>{name.replace('_',' ').title()}</b><br>
+                Score: <b>{obj['score']}</b> |
                 Confidence: <b>{obj['confidence']}</b><br>
                 <i>{obj['reasoning']}</i>
             </div>
             """
 
-        #  Visual Attributes 
         html += "<h3>Visual Attributes</h3><ul>"
         for k, v in va.items():
-            label = k.replace("_", " ").title()
             if isinstance(v, list):
                 v = ", ".join(v)
-            html += f"<li><b>{label}:</b> {v}</li>"
+            html += f"<li><b>{k.replace('_',' ').title()}:</b> {v}</li>"
         html += "</ul>"
 
-        # Visual Metadata 
         html += "<h3>Visual Metadata</h3><ul>"
         for k, v in vm.items():
-            label = k.replace("_", " ").title()
-            html += f"<li><b>{label}:</b> {v}</li>"
+            html += f"<li><b>{k.replace('_',' ').title()}:</b> {v}</li>"
         html += "</ul>"
 
-        # ---- Ambiguities ----
         if ambiguities:
             html += "<h3>Ambiguities</h3><ul>"
             for a in ambiguities:
@@ -100,34 +128,39 @@ class GradioUI:
         html += "</div>"
         return html
 
-    # Complete UI
+    # ---------- UI ----------
     def run(self):
         with gr.Blocks() as app:
-            gr.Markdown("## 🕶️ Eyeglasses Visual Analyzer")
+            gr.Markdown("## 🕶️ Eyeglasses Visual Analyzer — Batch Mode")
 
             with gr.Row():
-                # LHS
-                with gr.Column(scale=1):
-                    url_input = gr.Textbox(
-                        label="Image URL",
-                        placeholder="static5.lenskart.com/media/catalog/..."
-                    )
-                    analyze_btn = gr.Button("Analyze")
-                    image_display = gr.HTML(label="Image Preview")
 
-                # RHS
+                # ---------- LEFT ----------
                 with gr.Column(scale=1):
-                    analysis_output = gr.HTML(
-                        label="Analysis Output"
+                    gr.Markdown("### Image Inputs")
+                    csv_input = gr.Textbox(
+                        label="Image URLs (one per line / CSV)",
+                        placeholder="static5.lenskart.com/...\nhttps://...\n...",
+                        lines=12
                     )
+                    analyze_btn = gr.Button("Analyze Images")
+
+                # ---------- RIGHT ----------
+                with gr.Column(scale=2):
+                    gr.Markdown("### Analysis Results")
+                    output_html = gr.HTML()
 
             analyze_btn.click(
-                fn=self.analyze,
-                inputs=url_input,
-                outputs=[image_display, analysis_output]
+                fn=self.analyze_bulk,
+                inputs=csv_input,
+                outputs=output_html
             )
 
-        app.launch(server_name="0.0.0.0",server_port=7860,share=False)
+        app.launch(
+            server_name="0.0.0.0",
+            server_port=7860,
+            share=False
+        )
 
 
 if __name__ == "__main__":
