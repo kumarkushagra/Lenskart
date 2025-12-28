@@ -21,7 +21,7 @@ small models since i didnt have GPU (on home server)
 
 Microservices setup using Docker.
 
-![Lenskart](public/Lenskart.png)
+![Architecture](public/Lenskart.png)
 
 
 I divided this system into 3 services (will implement DB later)
@@ -120,7 +120,7 @@ Each attribute is scored from `-5.0` to `+5.0` with a corresponding confidence s
 ---
 
 ## User Interface
-[attatch image]
+![UI](public/UI.png)
 Gradio UI supports:
 - Single & bulk image URLs
 - Visual result rendering
@@ -202,4 +202,4 @@ You can access this server via ssh (ssh.devvdeploy.site) OR at `cockpit.devvdepl
 - Username: lenskart
 - password: [MY ROLLNUMER sir/ma'am]
 
-(pls do not attack my network 😭)
+(pls do not misuse my machine or sniff my network 😭🙏🙏)
