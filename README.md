@@ -197,9 +197,11 @@ Gradio UI supports:
 ---
 
 # Test on my machine
+## DEMO 
+[attatch demo video]
 I have deployed this on my Home Server, available at: `https://lenskart.devvdeploy.site/`
 You can access this server via ssh (ssh.devvdeploy.site) OR at `cockpit.devvdeploy.site` 
-- Username: lenskart
-- password: [MY ROLLNUMER sir/ma'am]
+- Username: `lenskart`
+- password: `lenskart`
 
-(pls do not misuse my machine or sniff my network 😭🙏🙏)
+(pls do not misuse my machine or sniff my network 😭🙏🙏, this user will be removed after 10 days)
