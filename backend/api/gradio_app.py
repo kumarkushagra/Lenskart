@@ -7,7 +7,6 @@ API_ENDPOINT = os.getenv("BACKEND_URL", "http://127.0.0.1:8000/analyze")
 
 class GradioUI:
 
-    # ---------- BULK ANALYSIS ----------
     def analyze_bulk(self, csv_text: str):
         if not csv_text.strip():
             return "<pre style='color:red;'>Empty input</pre>"
