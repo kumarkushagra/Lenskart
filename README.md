@@ -18,7 +18,12 @@ small models since i didnt have GPU (on home server)
 ---
 
 ## Architecture
-Microservices setup using Docker Compose.
+
+Microservices setup using Docker.
+
+![Lenskart](public/Lenskart.png)
+
+
 I divided this system into 3 services (will implement DB later)
 
 ### Services
