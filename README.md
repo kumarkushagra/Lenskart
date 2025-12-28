@@ -1,3 +1,200 @@
-# Lenskart
-Lenskart Project
-## still working on it, check after 5PM 
+# AI-Powered Visual Product Measurement System
+
+Lenskart Campus Assignment A1.0
+
+This repo contains a system to analyze eyeglasses images and extract objective, visible product characteristics using AI vision models. 
+Outputs structured, machine-readable data without applying merchandising or user preference logic.
+
+- (i used gemma3:4b, ministral-3:3b, qwen3-vl:4b)
+small models since i didnt have GPU (on home server)
+---
+
+## TODO: 
+- Analyze eyeglasses product images
+- Extract only observable visual properties
+- Return consistent, structured outputs
+- Avoid subjective styling or recommendation logic (no extra information / comments from LLM)
+
+---
+
+## Architecture
+Microservices setup using Docker Compose.
+I divided this system into 3 services (will implement DB later)
+
+### Services
+- LLM Service: Ollama running vision capable models like `gemma3:4b, ministral-3:3b, qwen3-vl:4b`
+- Backend API: FastAPI for image analysis 
+- Frontend UI: Gradio web interface
+
+### Data Flow
+- User submits image URLs via UI (multiple at once or one at a time)
+- TODO: Backend checks if image is already presend in the database (i.e. already processed)
+- Backend fetches images from the URL
+- Images sent to LLM for analysis
+- LLM returns structured JSON
+- Results displayed and exportable
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+- Docker + Docker Compose (If not installed pls refer to the bottom of this documentation) 
+- ~8GB RAM (i would reccomend GPU, but its wayy too expensive on cloud platforms)
+
+### Quick Start
+- Clone repo
+- cd into the repo
+- Run `docker-compose up --build` (watch the logs)
+  `It will take a while to download all the models, in /Lenskart/backend/llm_server/Dockerfile, i have written gemma3:4b ONLY, since it takes very long time to download these models`
+- Services started:
+  - Backend: `localhost:8000`
+  - UI: `localhost:7860`
+
+## GO TO localhost:7860 to interact with the UI
+
+### Manual Setup (recommended if GPU && GPU drivers are already configured on local device)
+- Install Ollama
+- Pull `gemma3:4b`
+- Install Python libraries
+- Run FastAPI + Gradio separately, AND ENSURE the the ollama client is running in background OR execute `ollama serve` to start it (ollama services are available at port 11434)
+
+---
+
+## Ports & Services
+- FastAPI backend: `8000`
+- Gradio UI: `7860`
+- Ollama service: default Ollama port (11434)
+- Config via environment variables / Docker
+
+---
+
+## Visual Measurement Dimensions 
+(as mentioned in the assignment)
+Each attribute is scored from `-5.0` to `+5.0` with a corresponding confidence score.
+
+- Gender Expression (masculine ↔ feminine)
+- Visual Weight (sleek ↔ bold)
+- Embellishment (simple ↔ ornate)
+- Unconventionality (classic ↔ avant-garde)
+- Formality (casual ↔ formal)
+
+---
+
+## Visual Attributes
+- Wireframe presence
+- Frame geometry
+- Transparency
+- Dominant colors
+- Surface texture
+- Kids suitability
+
+---
+
+## Visual Metadata
+- Image clarity
+- View angle
+- Lighting conditions
+- Ambiguities (if any)
+
+---
+
+## API Usage
+
+### Endpoint
+- `GET /analyze/{image_url}`
+
+  example: `http://localhost:8000/analyze/https://static5.lenskart.com/media/catalog/product/pro/1/thumbnail/1325x636/9df78eab33525d08d6e5fb8d27136e95//l/i/grey-silver-full-rim-rectangle-lenskart-air-formals-la-e16643-eyeglasses__dsc7672_24_09_2025.jpg`
+
+
+### Output
+- Structured JSON
+- In the json, Scores + confidence + reasoning
+- Validated via Pydantic schemas
+
+---
+
+## User Interface
+[attatch image]
+Gradio UI supports:
+- Single & bulk image URLs
+- Visual result rendering
+- JSON export
+- Error feedback for invalid inputs
+
+---
+
+## Code Structure
+- `image.py`  
+  - Image fetching
+  - Ollama interaction
+  - Prompt handling
+  - Output parsing
+
+- `schema.py`  
+  - Pydantic data models
+  - 
+- `main.py`  
+  - FastAPI endpoints
+  - Async processing
+  - Basic Error handling
+
+- `gradio_app.py`  
+  - UI logic
+---
+
+## AI Integration
+- Model: Gemma3:4b via Ollama
+- Deterministic output (temperature = 0)
+- Structured prompts
+- JSON schema enforcement
+
+---
+
+## Key Decisions
+- Microservices for separation of concerns
+- Docker for reproducibility
+- Ollama for self-hosted inference
+- FastAPI for async performance
+- URL-based image input
+
+---
+
+## Limitations
+- VERY High Resource usage (RAM && GPU)
+- Single vision model
+- Slow
+  [Attatch ollama logs here] 
+- Internet required for image fetch
+
+---
+
+## Future Improvements
+- Multi-model support
+- Batch optimization
+- rate limiting
+
+---
+
+## Performance Notes
+- Latency: ~10–30s per image (if model is already loaded in GPU memory, it takes ~12 secs to process an image, if its CPU, we have to wait for ~120 seconds)
+- Throughput limited by model (really cant do anything about this other than improving the inftastructure)
+- Memory-heavy inference 
+
+---
+
+## Development Notes
+- Focused on prompt consistency
+- Heavy emphasis on schema design
+- Handling AI unpredictability
+- Translating raw AI output into usable data
+
+---
+
+# Test on my machine
+I have deployed this on my Home Server, available at: `https://lenskart.devvdeploy.site/`
+You can access this server via ssh (ssh.devvdeploy.site) OR at `cockpit.devvdeploy.site` 
+- Username: lenskart
+- password: [MY ROLLNUMER sir/ma'am]
+
+(pls do not attack my network 😭)
