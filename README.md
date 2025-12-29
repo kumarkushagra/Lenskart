@@ -9,6 +9,8 @@ Outputs structured, machine-readable data without applying merchandising or user
 small models since i didnt have GPU (on home server)
 ---
 
+`backend logic in: backend/api`
+
 ## TODO: 
 - Analyze eyeglasses product images
 - Extract only observable visual properties
