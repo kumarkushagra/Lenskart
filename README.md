@@ -213,7 +213,7 @@ Gradio UI supports:
 
 # Test on my machine
 ## DEMO 
-[attatch demo video]
+[demo video in public dir: public/demo,mp4]
 
 I have deployed this on my Home Server, available at: `https://lenskart.devvdeploy.site/`
 You can access this server via ssh (ssh.devvdeploy.site) OR at `cockpit.devvdeploy.site` 
