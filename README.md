@@ -9,6 +9,8 @@ Outputs structured, machine-readable data without applying merchandising or user
 small models since i didnt have GPU (on home server)
 ---
 
+`backend logic in: backend/api`
+
 ## TODO: 
 - Analyze eyeglasses product images
 - Extract only observable visual properties
@@ -24,11 +26,11 @@ Microservices setup using Docker.
 ![Architecture](public/Lenskart.png)
 
 
-I divided this system into 3 services (will implement DB later)
+I used 4 services to build this system
 
 ### Services
 - LLM Service: Ollama running vision capable models like `gemma3:4b, ministral-3:3b, qwen3-vl:4b`
-- Backend API: FastAPI for image analysis 
+- Backend API: FastAPI for image analysis and exception handeling 
 - Supabase: sql based databse which stores the hash values of images (unique) and returns the cache results 
 - Frontend UI: Gradio web interface
 
@@ -44,12 +46,9 @@ I divided this system into 3 services (will implement DB later)
 
 ## Setup & Installation
 
-### Prerequisites
-- Docker + Docker Compose (If not installed pls refer to the bottom of this documentation) 
-- ~8GB RAM (i would reccomend GPU, but its wayy too expensive on cloud platforms)
 
 
-### Manual Setup (recommended if GPU && GPU drivers are already configured on local device)
+### 1) Manual Setup (recommended if GPU drivers are already configured on local device)
 - Install [Ollama](https://ollama.com/download)
 - Pull `gemma3:4b`
 - Install Python libraries (requirements.txt)
@@ -60,12 +59,18 @@ I divided this system into 3 services (will implement DB later)
 - cd into the repo
 - Setup the env variables (provided at the bottom (check my server, run `cat .env`))
 
-### Quick Start 
+
+### 2) using docker (not recommended because of no GPU support)
+- Docker + Docker Compose (If not installed pls refer to the bottom of this documentation) 
+- ~8GB RAM (i would reccomend GPU, but its wayy too expensive on cloud platforms)
+- update the .env from my machine 
   `easier, but slow (i was unable to configure the GPU drivers in the docker container, so the LLM server dos'nt detect GPU))`
 
+### Quick Start 
+- Setup the env variables (provided at the bottom (check my server, run `cat .env`))
 - Run `docker-compose up` (watch the logs)
-  `It will take a while to download all the models, in /Lenskart/backend/llm_server/Dockerfile, i have written gemma3:4b ONLY, since it takes very long time to download these models`
-  
+  `It will take a while to download all the models, file: /Lenskart/backend/llm_server/Dockerfile, i have written gemma3:4b ONLY, since it takes very long time to download these models`
+
 Services started:
   - Backend: `localhost:8000`
   - UI: `localhost:7860`
@@ -208,7 +213,7 @@ Gradio UI supports:
 
 # Test on my machine
 ## DEMO 
-[attatch demo video]
+[demo video in public dir: public/demo,mp4]
 
 I have deployed this on my Home Server, available at: `https://lenskart.devvdeploy.site/`
 You can access this server via ssh (ssh.devvdeploy.site) OR at `cockpit.devvdeploy.site` 
