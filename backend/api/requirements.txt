@@ -6,4 +6,4 @@ ollama
 pydantic
 supabase
 websockets>=11.0
-
+dotenv
