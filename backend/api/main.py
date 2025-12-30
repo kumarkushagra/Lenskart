@@ -7,8 +7,9 @@ import uvicorn
 
 from dotenv import load_dotenv
 load_dotenv()
-
-cache = ImageCache(supabase_url=os.getenv("SUPABASE_URL"),supabase_key=os.getenv("SUPABASE_KEY"))
+# these are the env variables for supabase (CAN BE COMMITTED AS THEY ARE PUBLIC)
+# im pushing only the publishable key, not the secret key
+cache = ImageCache(supabase_url=os.getenv("SUPABASE_URL","https://lnchdddfspjufmpbxoui.supabase.co"),supabase_key=os.getenv("SUPABASE_KEY","sb_publishable_fuWRuUs0RoyO63TMCCiwiA_-ifl9PHa"))
 
 analyzer = ImageAnalyzer()
 app = FastAPI()
