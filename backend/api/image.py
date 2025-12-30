@@ -32,37 +32,45 @@ class ImageAnalyzer:
 
     async def process_json(self, image_path: str) -> ImageAnalysis:
         prompt = """
-            Analyze the image and return ONLY valid JSON matching the schema.
+            You are a precision Optical Measurement AI. Analyze the image and output VISUAL MEASUREMENTS as strictly formatted JSON.
 
-            You are performing VISUAL MEASUREMENT of eyeglasses.
-            This is NOT classification, recommendation, or merchandising.
+            STEP 1: IDENTIFY CONSTRUCTION (Internal Check)
+            - Is it RIMLESS? (Lenses bolted directly to bridge/temples, no surrounding material).
+            - Is it FULL-RIM? (Material completely encircles the lenses).
+            - Is it SEMI-RIM? (Material covers top only).
 
-            RULES:
-            - Use ONLY visually observable cues.
-            - Do NOT infer brand, price, intent, user, or quality.
-            - Choose ONLY allowed enum values.
-            - Include ALL required fields.
-            - Return STRICT JSON only.
+            STEP 2: APPLY SCORING RULES (Strict Adherence Required)
 
-            SCORING:
-            - Scores represent RELATIVE visual strength.
-            - 0.0 allowed ONLY if opposing cues cancel out.
-            - If any lean exists, use a non-zero score.
-            - At least TWO dimensions MUST be non-zero.
+            1.  Visual Weight (-5.0 to +5.0):
+                -   CRITICAL RULE: If Construction is RIMLESS, Score MUST be -5.0 to -4.0.
+                -   -5.0 (Invisible/Light): Rimless, drill-mounts, or ultra-thin <1mm wire.
+                -   +5.0 (Bold/Heavy): Thick acetate (>4mm), chunky geometric frames, high-contrast black/tortoise.
 
-            BANDS:
-            - ±0.5 to ±1.0 : slight lean
-            - ±1.5 to ±2.5 : clear lean
-            - ±3.0 to ±4.5 : strong expression
+            2.  Gender Expression (-5.0 to +5.0):
+                -   -5.0 (Masculine): Rectangular, square, double-bar aviator, flat browline.
+                -   0.0 (Unisex): Round, PANTOS (tea-cup), or oval shapes. Rimless round frames are typically UNISEX.
+                -   +5.0 (Feminine): EXAGGERATED Cat-Eye, Butterfly, or Upswept corners.
+                -   *Warning*: Do not confuse "Round" with "Cat-Eye". If no material extends upwards at corners, it is NOT Cat-Eye.
 
-            DIMENSIONS:
-            - Gender Expression: masculine (-5) → feminine (+5)
-            - Visual Weight: light (-5) → heavy (+5)
-            - Embellishment: simple (-5) → ornate (+5)
-            - Unconventionality: classic (-5) → avant-garde (+5)
-            - Formality: casual (-5) → formal (+5)
+            3.  Embellishment (-5.0 to +5.0):
+                -   -5.0 (Minimal): Standard functional hinges, unibody metal/plastic, no patterns.
+                -   +5.0 (Ornate): Crystals, pearls, filigree engraving, multi-color patterns, non-functional aesthetic hardware.
 
-            Return JSON only.
+            4.  Unconventionality (-5.0 to +5.0):
+                -   -5.0 (Classic): Timeless shapes (Round, Rectangle, Aviator) in standard colors (Gold, Silver, Black, Tortoise).
+                -   +5.0 (Avant-Garde): Asymmetrical, shield/visor styles, neon/transparent colors, octagonal/hexagonal shapes.
+
+            5.  Formality (-5.0 to +5.0):
+                -   -5.0 (Casual): Rubberized, colorful plastic, sporty wraps.
+                -   +5.0 (Formal): Rimless styles, high-polish gold/silver/bronze, titanium aesthetics.
+
+            VISUAL ATTRIBUTES EXTRACTION:
+            - Colors: List the METAL color (Gold/Silver/Bronze) separate from the TIP color (Black/Tortoise).
+            - Geometry: Use specific terms: "Round", "Pantos", "Rectangular", "Cat-Eye".
+
+            OUTPUT INSTRUCTIONS:
+            - Output ONLY valid JSON matching the schema.
+            - No markdown, no conversational text.
         """
 
         full_response = ""
